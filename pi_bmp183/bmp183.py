@@ -49,20 +49,17 @@ class BMP183():
     TEMPERATURE_WAIT = 0.0045
     PRESSURE_COMMAND = 0x34
 
-    def __init__(self, oss=3):
-        # +------+-------+-----+
-        # |      | BOARD | BCM |
-        # +------+-------+-----+
-        # | MOSI |  19   | 10  |
-        # | MISO |  21   |  9  |
-        # | SCK  |  23   | 11  |
-        # | CE0  |  24   |  8  |
-        # +------+-------+-----+
-        self._gpio_mode = GPIO.BOARD
-        self._sck_pin = 23
-        self._mosi_pin = 19
-        self._miso_pin = 21
-        self._cs_pin = 24
+    def __init__(self, cs_pin, mosi_pin=0, miso_pin=0, sck_pin=0, oss=3, gpio_mode=GPIO.BOARD):
+        self._gpio_mode = gpio_mode
+        self._cs_pin = cs_pin
+        self._spi_mode = 'HARDWARE'
+
+        if mosi_pin > 0:
+            self._spi_mode = 'SOFTWARE'
+            self._mosi_pin = mosi_pin
+            self._miso_pin = miso_pin
+            self._sck_pin = sck_pin
+
         self._oss = OSS.Mode.get(oss, OSS.Mode[3])
         self._delay = 1 / 1000000.0  # 1MHz - 1 / 7,800,000 7.8MHz
         self._logger = None
